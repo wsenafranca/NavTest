@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "891790381192",
+    "firebase_url": "https://navtest-4d807.firebaseio.com",
+    "project_id": "navtest-4d807",
+    "storage_bucket": "navtest-4d807.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891790381192:android:7a65af24df6e1757",
+        "android_client_info": {
+          "package_name": "washington.franca.com.navtest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "891790381192-577j0jitbl6cj145eicuvo0fh05o444i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "washington.franca.com.navtest",
+            "certificate_hash": "b90c0afcc0cecb6ab372e2fb49191170c92814c4"
+          }
+        },
+        {
+          "client_id": "891790381192-4b88pc3f8cfobcv403mjotuhgis7ra8m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "washington.franca.com.navtest",
+            "certificate_hash": "c8b35e2bd6a400551ee84cd9d7bcedfac555a17d"
+          }
+        },
+        {
+          "client_id": "891790381192-0fv71mh89dtfkufgeios2r4tgse15iof.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtNRglTVCzjeaOZadCOg1IksAM0gyiLPM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "891790381192-mfbhcm9k7tik1kld0db9gs1sco97gq70.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

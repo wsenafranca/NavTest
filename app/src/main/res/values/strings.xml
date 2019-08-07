@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">NavTest</string>
+    <string name="facebook_application_id">528820187855933</string>
+    <string name="facebook_login_protocol_scheme">fb528820187855933</string>
+
+    <!-- Bottom Navigation Menu -->
+    <string name="menu_home">Home</string>
+    <string name="menu_favorites">Favorites</string>
+    <string name="menu_notifications">Notifications</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_logout">Logout</string>
+
+    <!-- Login -->
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_name_hint">Name</string>
+    <string name="login_login_button">Login</string>
+    <string name="login_sign_in_button">Sign in</string>
+    <string name="login_do_not_have_account_button">Don\'t have account? Sign up</string>
+    <string name="login_already_have_account_button">Already have account? Sign in</string>
+    <string name="login_forgot_password_details_text">To reset password, enter your email and check mail to follow
+        instruction.
+    </string>
+    <string name="login_forgot_password_check_your_email_message">Please, check your email</string>
+    <string name="login_forgot_password_button">Forgot password?</string>
+    <string name="login_reset_password_button">Reset password</string>
+    <string name="login_policy_privacy_button">Policy Privacy</string>
+    <string name="login_policy_privacy_link">"https://wsenafranca.github.io/NavTest/docs/index.html"</string>
+    <string name="login_sign_up_button">Sign up</string>
+    <string name="login_loading_indicator">Connecting…</string>
+
+    <!-- Home -->
+    <string name="home_welcome_message">Welcome, %1$s!</string>
+    <string name="home_welcome_back_message">Welcome back, %1$s!</string>
+
+    <!-- Settings -->
+    <string name="settings_preference_general_category_title">General</string>
+    <string name="settings_preference_account_title">Account</string>
+    <string name="settings_preference_account_change_password_title">Password</string>
+    <string name="settings_preference_account_link_google_title">Google</string>
+    <string name="settings_preference_account_link_facebook_title">Facebook</string>
+    <string name="settings_preference_account_link_state_connected">Connected</string>
+    <string name="settings_preference_account_link_state_disconnected">Disconnected</string>
+    <string name="settings_preference_account_link_state_enabled">Change Password</string>
+    <string name="settings_preference_account_link_state_disabled">Define Password</string>
+    <string name="settings_preference_account_delete_title">Delete</string>
+    <string name="settings_preference_account_delete_summary">Your data will be lost.</string>
+    <string name="settings_preference_dark_theme_title">Dark theme</string>
+    <string name="settings_preference_locale_title">Language</string>
+    <string name="settings_preference_notifications_category_title">Notifications</string>
+    <string name="settings_preference_notifications_enable_notifications_title">Show notifications</string>
+    <string name="settings_preference_notifications_ringtone_title">Sound</string>
+    <string name="settings_preference_notifications_ringtone_dialog_title">Select a ringtone</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

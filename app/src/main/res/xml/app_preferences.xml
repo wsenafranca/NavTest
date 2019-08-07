@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory>
+        <Preference app:key="user"/>
+    </PreferenceCategory>
+    <PreferenceCategory>
+        <androidx.preference.PreferenceScreen
+                app:key="account"
+                app:title="@string/settings_preference_account_title"
+                app:icon="@drawable/ic_account">
+            <Preference
+                    app:key="change_password"
+                    app:title="@string/settings_preference_account_change_password_title"/>
+            <Preference
+                    app:key="link_google"
+                    app:title="@string/settings_preference_account_link_google_title"/>
+            <Preference
+                    app:key="link_facebook"
+                    app:title="@string/settings_preference_account_link_facebook_title"/>
+            <Preference
+                    app:key="delete_account"
+                    app:title="@string/settings_preference_account_delete_title"
+                    app:summary="@string/settings_preference_account_delete_summary"
+                    app:icon="@drawable/ic_menu_delete_account"/>
+        </androidx.preference.PreferenceScreen>
+        <SwitchPreferenceCompat
+                app:key="dark_theme"
+                app:title="@string/settings_preference_dark_theme_title"
+                app:icon="@drawable/ic_menu_theme"/>
+        <Preference
+                app:key="locale"
+                app:title="@string/settings_preference_locale_title"
+                app:icon="@drawable/ic_menu_locale"/>
+    </PreferenceCategory>
+    <PreferenceCategory app:title="@string/settings_preference_notifications_category_title">
+        <SwitchPreferenceCompat
+                app:key="enable_notifications"
+                app:title="@string/settings_preference_notifications_enable_notifications_title"
+                app:icon="@drawable/ic_menu_notifications"
+                app:defaultValue="true"/>
+        <Preference
+                app:key="ring_tone"
+                app:title="@string/settings_preference_notifications_ringtone_title"
+                app:icon="@drawable/ic_menu_notifications_ring_tone"
+                app:dependency="enable_notifications"/>
+    </PreferenceCategory>
+</androidx.preference.PreferenceScreen>

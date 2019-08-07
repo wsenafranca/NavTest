@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#50505050"
+        android:clickable="true"
+        android:focusable="true"
+        android:fitsSystemWindows="true">
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="48dp"
+            android:background="?attr/colorPrimarySurface">
+        <com.github.ybq.android.spinkit.SpinKitView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                style="@style/SpinKitView.Large.Circle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:SpinKit_Color="?attr/colorOnPrimarySurface" />
+        <TextView
+                android:id="@+id/progress_indicator_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:gravity="center"
+                android:textColor="?attr/colorOnPrimarySurface"
+                tools:text="Loading..."/>
+    </LinearLayout>
+</FrameLayout>

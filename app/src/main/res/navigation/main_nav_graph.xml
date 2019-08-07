@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/main_nav_graph"
+            app:startDestination="@id/dest_launch">
+
+    <include app:graph="@navigation/login_nav_graph"/>
+
+    <fragment android:id="@+id/dest_launch" android:name="washington.franca.com.navtest.fragment.LaunchFragment"
+              tools:layout="@layout/fragment_launch"/>
+    <fragment android:id="@+id/dest_home"
+              android:name="washington.franca.com.navtest.fragment.HomeFragment"
+              android:label="@string/menu_home"
+              tools:layout="@layout/fragment_home"/>
+    <fragment android:id="@+id/dest_favorites"
+              android:name="washington.franca.com.navtest.fragment.FavoriteFragment"
+              android:label="@string/menu_favorites"
+              tools:layout="@layout/fragment_favorite"/>
+    <fragment android:id="@+id/dest_notifications"
+              android:name="washington.franca.com.navtest.fragment.NotificationFragment"
+              android:label="@string/menu_notifications"
+              tools:layout="@layout/fragment_notification"/>
+    <fragment android:id="@+id/dest_settings"
+              android:name="washington.franca.com.navtest.fragment.SettingsFragment"
+              android:label="@string/menu_settings"
+              tools:layout="@layout/fragment_settings">
+    </fragment>
+
+    <fragment android:id="@+id/dest_sub_settings" android:name="washington.franca.com.navtest.fragment.SettingsFragment"
+              android:label="{title}" tools:layout="@layout/fragment_settings">
+        <argument android:name="title" app:argType="string" app:nullable="false"/>
+        <argument android:name="root" app:argType="string" app:nullable="true"/>
+    </fragment>
+
+    <action android:id="@+id/action_global_to_login_nav_graph"
+            app:destination="@id/login_nav_graph" app:popUpTo="@+id/main_nav_graph" app:popUpToInclusive="true"/>
+
+    <action android:id="@+id/action_global_to_dest_home"
+            app:destination="@id/dest_home" app:popUpTo="@+id/main_nav_graph" app:popUpToInclusive="true"/>
+
+    <action android:id="@+id/action_global_to_dest_sub_settings"
+            app:destination="@id/dest_sub_settings"/>
+</navigation>
