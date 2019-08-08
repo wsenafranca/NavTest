@@ -1,16 +1,12 @@
 package washington.franca.com.navtest.viewmodel
 
 import android.app.Application
+import android.content.Intent
 import android.graphics.Bitmap
-import android.util.Log
-import androidx.databinding.ObservableField
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
-import com.facebook.login.LoginResult
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.*
-import washington.franca.com.navtest.api.LoginManager
 import washington.franca.com.navtest.repository.UserRepository
 import washington.franca.com.navtest.util.Event
 
@@ -31,8 +27,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         AUTHENTICATED
     }
 
-    private val repository = UserRepository(application)
-    private val manager:LoginManager = LoginManager()
+    private val repository: UserRepository = UserRepository()
 
     val authState = MutableLiveData<Event<AuthState>>()
 
@@ -50,8 +45,6 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         _profilePhoto.value = null
     }
 
-    fun googleSignInClient():GoogleSignInClient = repository.googleSignInClient
-
     fun signInWithEmail() {
         email = null
         isNewUser = false
@@ -59,184 +52,295 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
     }
 
     fun verifyEmail(email:String?) {
-        repository.verifyEmail(email, {
-            this.email = email
-            when {
-                it.contains(EmailAuthProvider.PROVIDER_ID) -> {
-                    isNewUser = false
-                    authState.postValue(Event(AuthState.SIGNING_IN_INPUT_PASSWORD))
+        repository.verifyEmail(email, object : UserRepository.Callback<List<String>>(){
+            override fun onSuccess(result: List<String>) {
+                this@UserViewModel.email = email
+                when {
+                    result.contains(EmailAuthProvider.PROVIDER_ID) -> {
+                        isNewUser = false
+                        authState.postValue(Event(AuthState.SIGNING_IN_INPUT_PASSWORD))
+                    }
+                    result.isNotEmpty() -> {
+                        isNewUser = true
+                        authState.postValue(Event(AuthState.SIGNING_IN_INPUT_PASSWORD))
+                    }
+                    else -> {
+                        authState.postValue(Event(AuthState.SIGNING_UP))
+                    }
                 }
-                it.isNotEmpty() -> {
-                    isNewUser = true
-                    authState.postValue(Event(AuthState.SIGNING_IN_INPUT_PASSWORD))
-                }
-                else -> {
-                    authState.postValue(Event(AuthState.SIGNING_UP))
-                }
-            }
-        }, {
-            showErrorMessage(it)
-        })
-    }
-
-    fun signInWithEmail(email:String?, password: String?) {
-        manager.signInWithEmail(email, password, object:LoginManager.Callback{
-            override fun onSuccess(user: FirebaseUser) {
-                postCurrentUser()
-            }
-
-            override fun onCancel() {
             }
 
             override fun onError(e: Throwable?) {
                 showErrorMessage(e)
             }
+        })
+    }
 
-            override fun onNeedReauthenticate() {
+    fun signInWithEmail(email:String?, password: String?) {
+        repository.signInWithEmail(email, password, object: UserRepository.Callback<FirebaseUser>() {
+            override fun onSuccess(result: FirebaseUser) {
+                postCurrentUser()
+            }
+
+            override fun onError(e: Throwable?) {
+                showErrorMessage(e)
             }
         })
     }
 
     fun createUser(email: String?, password: String?, name:String?) {
-        manager.createUser(email, password, name, object :LoginManager.Callback {
-            override fun onSuccess(user: FirebaseUser) {
+        repository.createUser(email, password, name, object : UserRepository.Callback<FirebaseUser>() {
+            override fun onSuccess(result: FirebaseUser) {
                 postCurrentUser()
-            }
-
-            override fun onCancel() {
             }
 
             override fun onError(e: Throwable?) {
                 showErrorMessage(e)
             }
+        })
+    }
+
+    private fun reauthenticate(fragment: Fragment, providerId: String, onSuccess:()->Unit) {
+        when(providerId) {
+            EmailAuthProvider.PROVIDER_ID-> {
+                repository.reauthenticateWithEmail(fragment, object:UserRepository.Callback<FirebaseUser>(){
+                    override fun onSuccess(result: FirebaseUser) {
+                        onSuccess()
+                    }
+
+                    override fun onError(e: Throwable?) {
+                        showErrorMessage(e)
+                    }
+                })
+            }
+            GoogleAuthProvider.PROVIDER_ID->{
+                 repository.reauthenticateWithGoogle(fragment, object:
+                     UserRepository.Callback<FirebaseUser>(){
+                     override fun onSuccess(result: FirebaseUser) {
+                         onSuccess()
+                     }
+
+                     override fun onError(e: Throwable?) {
+                         showErrorMessage(e)
+                     }
+                 })
+            }
+            FacebookAuthProvider.PROVIDER_ID->{
+                repository.reauthenticateWithFacebook(fragment, object:
+                    UserRepository.Callback<FirebaseUser>(){
+                    override fun onSuccess(result: FirebaseUser) {
+                        onSuccess()
+                    }
+
+                    override fun onError(e: Throwable?) {
+                        showErrorMessage(e)
+                    }
+                })
+            }
+        }
+    }
+
+    fun linkWithGoogle(fragment:Fragment) {
+        repository.linkWithGoogle(fragment, object : UserRepository.Callback<FirebaseUser>() {
+            override fun onSuccess(result: FirebaseUser) {
+                updateUser()
+            }
 
             override fun onNeedReauthenticate() {
+                val provider = repository.getProvider()
+                reauthenticate(fragment, provider) {
+                    linkWithGoogle(fragment)
+                }
+            }
+
+            override fun onError(e: Throwable?) {
+                e?.printStackTrace()
+                showErrorMessage(e)
             }
         })
     }
 
+    fun linkWithFacebook(fragment: Fragment) {
+        repository.linkWithFacebook(fragment, object : UserRepository.Callback<FirebaseUser>() {
+            override fun onSuccess(result: FirebaseUser) {
+                updateUser()
+            }
+
+            override fun onNeedReauthenticate() {
+                val provider = repository.getProvider()
+                reauthenticate(fragment, provider) {
+                    linkWithFacebook(fragment)
+                }
+            }
+
+            override fun onError(e: Throwable?) {
+                e?.printStackTrace()
+                showErrorMessage(e)
+            }
+        })
+    }
+
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?):Boolean {
+        return repository.onActivityResult(requestCode, resultCode, data)
+    }
+
     private fun postCurrentUser() {
-        repository.currentUser({
-            authState.postValue(Event(AuthState.AUTHENTICATED))
-            showMessage("Logged in")
-            updateUser()
-        }, {
-            authState.postValue(Event(AuthState.UNAUTHENTICATED))
-            showErrorMessage(it)
+        repository.currentUser(object : UserRepository.Callback<FirebaseUser>(){
+            override fun onSuccess(result: FirebaseUser) {
+                authState.postValue(Event(AuthState.AUTHENTICATED))
+                showMessage("Logged in")
+                updateUser()
+            }
+
+            override fun onError(e: Throwable?) {
+                authState.postValue(Event(AuthState.UNAUTHENTICATED))
+                showErrorMessage(e)
+            }
         })
     }
 
     private fun updateUser() {
-        repository.currentUser({
-            _user.postValue(it)
-            loadProfilePhoto()
-        }, {
-            authState.postValue(Event(AuthState.UNAUTHENTICATED))
-            showErrorMessage(it)
+        repository.currentUser(object : UserRepository.Callback<FirebaseUser>(){
+            override fun onSuccess(result: FirebaseUser) {
+                _user.postValue(result)
+                loadProfilePhoto()
+            }
+
+            override fun onError(e: Throwable?) {
+                authState.postValue(Event(AuthState.UNAUTHENTICATED))
+                showErrorMessage(e)
+            }
         })
     }
 
     fun verifyCurrentAccount() = postCurrentUser()
 
-    fun signInWithGoogle(account: GoogleSignInAccount?) {
-        repository.signInWithGoogle(account, {
-            postCurrentUser()
-        }, {
-            showErrorMessage(it)
+    fun signInWithGoogle(fragment: Fragment) {
+        repository.signInWithGoogle(fragment, object : UserRepository.Callback<FirebaseUser>(){
+            override fun onSuccess(result: FirebaseUser) {
+                postCurrentUser()
+            }
+
+            override fun onError(e: Throwable?) {
+                showErrorMessage(e)
+            }
         })
     }
 
-    fun signInWithFacebook(loginResult: LoginResult?) {
-        repository.signInWithFacebook(loginResult, {
-            postCurrentUser()
-        }, {
-            showErrorMessage(it)
+    fun signInWithFacebook(fragment: Fragment) {
+        repository.signInWithFacebook(fragment, object : UserRepository.Callback<FirebaseUser>(){
+            override fun onSuccess(result: FirebaseUser) {
+                postCurrentUser()
+            }
+
+            override fun onError(e: Throwable?) {
+                showErrorMessage(e)
+            }
         })
     }
 
-    fun sendPasswordResetEmail(email: String?, callback:()->Unit) {
-        repository.sendPasswordResetEmail(email, callback, {
-            showErrorMessage(it)
+    fun recoverPassword() {
+        authState.postValue(Event(AuthState.SIGNING_IN_FORGOT_PASSWORD))
+    }
+
+    fun sendPasswordResetEmail(email: String?) {
+        repository.sendPasswordResetEmail(email, object : UserRepository.Callback<FirebaseUser>() {
+            override fun onSuccess(result: FirebaseUser) {
+                authState.postValue(Event(AuthState.SIGNING_IN_INPUT_PASSWORD))
+            }
+
+            override fun onError(e: Throwable?) {
+                showErrorMessage(e)
+            }
         })
     }
 
-    fun updatePassword(password: String?, needReauthenticateCallback: (() -> Unit)?) {
-        try {
-            repository.updatePassword(password, {
+    fun updatePassword(fragment: Fragment) {
+        repository.updatePassword(fragment, object: UserRepository.Callback<FirebaseUser>() {
+            override fun onSuccess(result: FirebaseUser) {
                 updateUser()
-            }, {
-                if(it is FirebaseAuthRecentLoginRequiredException) {
-                    needReauthenticateCallback?.invoke()
-                } else {
-                    showErrorMessage(it)
+            }
+
+            override fun onNeedReauthenticate() {
+                val provider = repository.getProvider()
+                reauthenticate(fragment, provider) {
+                    updatePassword(fragment)
                 }
-            })
-        }catch (e:Exception) {
-            showErrorMessage(e)
-        }
+            }
+
+            override fun onError(e: Throwable?) {
+                e?.printStackTrace()
+                showErrorMessage(e)
+            }
+        })
     }
 
-    fun linkWithCredential(auth: AuthCredential, needReauthenticateCallback: (() -> Unit)?) {
-        try {
-            repository.linkWithCredential(auth, {
+    fun unlinkWithGoogle() {
+        repository.unlinkWithGoogle(object: UserRepository.Callback<FirebaseUser>(){
+            override fun onSuccess(result: FirebaseUser) {
                 updateUser()
-            }, {
-                if(it is FirebaseAuthRecentLoginRequiredException) {
-                    needReauthenticateCallback?.invoke()
-                } else {
-                    showErrorMessage(it)
-                }
-            })
-        }catch (e:Exception) {
-            showErrorMessage(e)
-        }
+            }
+
+            override fun onError(e: Throwable?) {
+                showErrorMessage(e)
+            }
+        })
     }
 
-    fun reauthenticate(auth:AuthCredential, callback: ((FirebaseUser) -> Unit)?) {
-        try {
-            repository.reauthenticate(auth, callback, {
-                showErrorMessage(it)
-            })
-        }catch (e:Exception) {
-            showErrorMessage(e)
-        }
-    }
+    fun unlinkWithFacebook() {
+        repository.unlinkWithFacebook(object: UserRepository.Callback<FirebaseUser>(){
+            override fun onSuccess(result: FirebaseUser) {
+                updateUser()
+            }
 
-    fun unlinkProvider(providerId:String) {
-        repository.unlinkProvider(providerId, {
-            updateUser()
-        }, {
-            showErrorMessage(it)
+            override fun onError(e: Throwable?) {
+                showErrorMessage(e)
+            }
         })
     }
 
     fun signOut() {
-        repository.signOut( {
-            authState.postValue(Event(AuthState.UNAUTHENTICATED))
-            _profilePhoto.postValue(null)
-        }, {
-            showErrorMessage(it)
+        repository.signOut(object: UserRepository.Callback<Void?>(){
+            override fun onSuccess(result: Void?) {
+                authState.postValue(Event(AuthState.UNAUTHENTICATED))
+                _profilePhoto.postValue(null)
+            }
+
+            override fun onError(e: Throwable?) {
+                showErrorMessage(e)
+            }
         })
     }
 
-    fun delete(callback: (() -> Unit)?) {
-        repository.delete({
-            authState.postValue(Event(AuthState.UNAUTHENTICATED))
-            _profilePhoto.postValue(null)
-        }, {
-            if(it is FirebaseAuthRecentLoginRequiredException) {
-                callback?.invoke()
-            } else {
-                showErrorMessage(it)
+    fun delete(fragment: Fragment) {
+        repository.deleteUser(object: UserRepository.Callback<Void?>(){
+            override fun onSuccess(result: Void?) {
+                authState.postValue(Event(AuthState.UNAUTHENTICATED))
+                _profilePhoto.postValue(null)
+            }
+
+            override fun onNeedReauthenticate() {
+                val provider = repository.getProvider()
+                reauthenticate(fragment, provider) {
+                    delete(fragment)
+                }
+            }
+
+            override fun onError(e: Throwable?) {
+                showErrorMessage(e)
             }
         })
     }
 
     private fun loadProfilePhoto() {
-        repository.loadProfilePhoto({
-            _profilePhoto.postValue(it)
-        }, {
-            showErrorMessage(it)
+        repository.loadProfilePhoto(getApplication(), object : UserRepository.Callback<Bitmap?>(){
+            override fun onSuccess(result: Bitmap?) {
+                _profilePhoto.postValue(result)
+            }
+
+            override fun onError(e: Throwable?) {
+                showErrorMessage(e)
+            }
         })
     }
 }

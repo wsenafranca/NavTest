@@ -1,13 +1,9 @@
 package washington.franca.com.navtest.fragment
 
-
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.*
-import android.widget.EditText
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.drawable.DrawableCompat
@@ -17,19 +13,12 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
 import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.*
 
 import washington.franca.com.navtest.R
 import washington.franca.com.navtest.viewmodel.UserViewModel
-
-private const val RC_GOOGLE_SIGN_IN = 9002
 
 class SettingsFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,11 +82,7 @@ class SettingsFragment : BaseFragment() {
             userViewModel.user.observe(viewLifecycleOwner, Observer {user->
                 findPreference<Preference>("delete_account")?.apply {
                     setOnPreferenceClickListener {
-                        userViewModel.delete {
-                            handleReauthenticate(user) {
-                                userViewModel.delete {  }
-                            }
-                        }
+                        userViewModel.delete(this@AccountPreferenceFragment)
                         return@setOnPreferenceClickListener true
                     }
                 }
@@ -106,7 +91,7 @@ class SettingsFragment : BaseFragment() {
                     summary = getString(R.string.settings_preference_account_link_state_disabled)
                     setIcon(R.drawable.ic_menu_password_disabled)
                     setOnPreferenceClickListener {
-                        handleLink(user, "update.email")
+                        userViewModel.updatePassword(this@AccountPreferenceFragment)
                         return@setOnPreferenceClickListener true
                     }
                 }
@@ -115,7 +100,7 @@ class SettingsFragment : BaseFragment() {
                     setIcon(R.drawable.ic_menu_google_disconnected)
                     setOnPreferenceClickListener {
                         summary = "Connecting..."
-                        handleLink(user, GoogleAuthProvider.PROVIDER_ID)
+                        userViewModel.linkWithGoogle(this@AccountPreferenceFragment)
                         return@setOnPreferenceClickListener true
                     }
                 }
@@ -124,7 +109,7 @@ class SettingsFragment : BaseFragment() {
                     setIcon(R.drawable.ic_menu_facebook_disconnected)
                     setOnPreferenceClickListener {
                         summary = "Connecting..."
-                        handleLink(user, FacebookAuthProvider.PROVIDER_ID)
+                        userViewModel.linkWithFacebook(this@AccountPreferenceFragment)
                         return@setOnPreferenceClickListener true
                     }
                 }
@@ -136,7 +121,7 @@ class SettingsFragment : BaseFragment() {
                                 setIcon(R.drawable.ic_menu_google_connected)
                                 setOnPreferenceClickListener {
                                     summary = "Disconnecting..."
-                                    userViewModel.unlinkProvider(GoogleAuthProvider.PROVIDER_ID)
+                                    userViewModel.unlinkWithGoogle()
                                     return@setOnPreferenceClickListener true
                                 }
                             }
@@ -147,7 +132,7 @@ class SettingsFragment : BaseFragment() {
                                 setIcon(R.drawable.ic_menu_facebook_connected)
                                 setOnPreferenceClickListener {
                                     summary = "Disconnecting..."
-                                    userViewModel.unlinkProvider(FacebookAuthProvider.PROVIDER_ID)
+                                    userViewModel.unlinkWithFacebook()
                                     return@setOnPreferenceClickListener true
                                 }
                             }
@@ -162,7 +147,7 @@ class SettingsFragment : BaseFragment() {
                                 DrawableCompat.setTint(icon, color)
 
                                 setOnPreferenceClickListener {
-                                    handleLink(user, "update.email")
+                                    userViewModel.updatePassword(this@AccountPreferenceFragment)
                                     return@setOnPreferenceClickListener true
                                 }
                             }
@@ -172,131 +157,9 @@ class SettingsFragment : BaseFragment() {
             })
         }
 
-        private fun handleLink(user:FirebaseUser, providerId:String) {
-            when(providerId) {
-                GoogleAuthProvider.PROVIDER_ID->{
-                    val signInIntent = userViewModel.googleSignInClient().signInIntent
-                    googleCallback.callback = {
-                        userViewModel.linkWithCredential(GoogleAuthProvider.getCredential(it.idToken, null)) {
-                            handleReauthenticate(user) {currentUser->
-                                handleLink(currentUser, providerId)
-                            }
-                        }
-                    }
-                    startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
-                }
-                "update.email"->{
-                    val editText = EditText(context)
-                    AlertDialog.Builder(context!!)
-                        .setTitle("Insert new password")
-                        .setView(editText)
-                        .setPositiveButton(android.R.string.ok) {d, _ ->
-                            d.dismiss()
-                            //val email = user.email
-                            val password = editText.editableText.toString()
-                            userViewModel.updatePassword(password) {
-                                handleReauthenticate(user) {currentUser->
-                                    handleLink(currentUser, providerId)
-                                }
-                            }
-                        }
-                        .setNeutralButton(android.R.string.cancel) {d, _ ->
-                            d.dismiss()
-                        }
-                        .show()
-                }
-                FacebookAuthProvider.PROVIDER_ID->{
-                    facebookLoginManger.registerCallback(facebookCallback, object: FacebookCallback<LoginResult> {
-                        override fun onSuccess(result: LoginResult?) {
-                            try {
-                                userViewModel.linkWithCredential(FacebookAuthProvider.getCredential(result!!.accessToken.token)) {
-                                    handleReauthenticate(user) {currentUser->
-                                        handleLink(currentUser, providerId)
-                                    }
-                                }
-                            }catch (e:Exception) {
-                                userViewModel.showErrorMessage(e)
-                            }
-                        }
-
-                        override fun onCancel() {}
-
-                        override fun onError(error: FacebookException?) {
-                            userViewModel.showErrorMessage(error)
-                        }
-                    })
-                    facebookLoginManger.logIn(this@AccountPreferenceFragment, ArrayList<String>().apply{
-                        add("email")
-                        add("public_profile")
-                    })
-                }
-            }
-        }
-
-        private fun handleReauthenticate(user:FirebaseUser, callback:(user:FirebaseUser)->Unit) {
-            for(profile in user.providerData) {
-                when(profile.providerId) {
-                    GoogleAuthProvider.PROVIDER_ID->{
-                        val signInIntent = userViewModel.googleSignInClient().signInIntent
-                        googleCallback.callback = {
-                            userViewModel.reauthenticate(GoogleAuthProvider.getCredential(it.idToken, null)) {currentUser->
-                                callback(currentUser)
-                            }
-                        }
-                        startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
-                        return
-                    }
-                    EmailAuthProvider.PROVIDER_ID->{
-
-                    }
-                    FacebookAuthProvider.PROVIDER_ID->{
-                        facebookLoginManger.registerCallback(facebookCallback, object: FacebookCallback<LoginResult> {
-                            override fun onSuccess(result: LoginResult?) {
-                                try {
-                                    userViewModel.reauthenticate(FacebookAuthProvider.getCredential(result!!.accessToken.token)) {currentUser->
-                                        callback(currentUser)
-                                    }
-                                }catch (e:Exception) {
-                                    userViewModel.showErrorMessage(e)
-                                }
-                            }
-
-                            override fun onCancel() {}
-
-                            override fun onError(error: FacebookException?) {
-                                userViewModel.showErrorMessage(error)
-                            }
-                        })
-                        facebookLoginManger.logIn(this@AccountPreferenceFragment, ArrayList<String>().apply{
-                            add("email")
-                            add("public_profile")
-                        })
-                        return
-                    }
-                }
-            }
-        }
-
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             super.onActivityResult(requestCode, resultCode, data)
-            when(requestCode) {
-                RC_GOOGLE_SIGN_IN-> {
-                    if(resultCode == Activity.RESULT_OK) {
-                        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                        try {
-                            googleCallback.callback?.invoke(task.getResult(ApiException::class.java)!!)
-                            googleCallback.callback = null
-
-                        } catch (e: ApiException) {
-                            // Google Sign In failed, update UI appropriately
-                            userViewModel.showErrorMessage(e)
-                        }
-                    }
-                }
-                else->{
-                    facebookCallback.onActivityResult(requestCode, resultCode, data)
-                }
-            }
+            userViewModel.onActivityResult(requestCode, resultCode, data)
         }
 
         class GoogleCallback {

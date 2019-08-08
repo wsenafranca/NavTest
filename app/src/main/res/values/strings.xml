@@ -18,25 +18,37 @@
     <string name="login_login_with_google_button">Login with Google</string>
     <string name="login_login_with_facebook_button">Login with Facebook</string>
     <string name="login_sign_in_button">Sign in</string>
+    <string name="login_authenticate_button">Authenticate</string>
     <string name="login_next_button">Next</string>
     <string name="login_do_not_have_account_button">Don\'t have account? Sign up</string>
     <string name="login_already_have_account_button">Already have account? Sign in</string>
     <string name="login_sign_in_password_welcome_back_title">Welcome back!</string>
-    <string name="login_sign_in_password_welcome_back_message">You\'ve already used &lt;b&gt;%1$s&lt;/b&gt; to sign in. Enter your password for that account.</string>
-    <string name="login_forgot_password_details_text">To reset password, enter your email and check mail to follow
-        instruction.
+    <string name="login_sign_in_password_welcome_back_message">You\'ve already used &lt;b&gt;%1$s&lt;/b&gt; to sign in.
+        Enter your password for that account.
+    </string>
+    <string name="login_forgot_password_details_text">Get instructions sent to this email that explain how to
+        reset your password.
     </string>
     <string name="login_forgot_password_check_your_email_message">Please, check your email</string>
     <string name="login_forgot_password_button">Forgot password?</string>
-    <string name="login_reset_password_button">Reset password</string>
+    <string name="login_reset_password_title">Reset password</string>
+    <string name="login_reset_password_button">Send</string>
+    <string name="login_create_password_button">Create</string>
+    <string name="login_update_password_button">Update</string>
     <string name="login_policy_privacy_button">Policy Privacy</string>
-    <string name="login_policy_privacy_link">"https://wsenafranca.github.io/NavTest/docs/"</string>
+    <string name="login_policy_privacy_link">"https://wsenafranca.github.io/NavTest/docs/privacy_policy/"</string>
     <string name="login_sign_up_button">Sign up</string>
     <string name="login_loading_indicator">Connecting…</string>
 
     <!-- Home -->
     <string name="home_welcome_message">Welcome, %1$s!</string>
     <string name="home_welcome_back_message">Welcome back, %1$s!</string>
+
+    <!-- Notifications -->
+    <string-array name="notifications_type">
+        <item>Notification</item>
+        <item>Event</item>
+    </string-array>
 
     <!-- Settings -->
     <string name="settings_preference_general_category_title">General</string>
@@ -57,6 +69,4 @@
     <string name="settings_preference_notifications_ringtone_title">Sound</string>
     <string name="settings_preference_notifications_ringtone_dialog_title">Select a ringtone</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

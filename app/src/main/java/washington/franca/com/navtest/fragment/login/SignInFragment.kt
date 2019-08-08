@@ -57,35 +57,6 @@ class SignInFragment : BaseLoginFragment() {
         sign_in_button.setOnClickListener {
             submit()
         }
-
-        /*
-        arguments?.let {
-            email_edit_text.setText(it.getString("email"))
-            password_edit_text.setText(it.getString("password"))
-        }
-
-        sign_in_button.setOnClickListener {
-            SoftKeyboard.hide(activity)
-            showProgress(true, "Connecting...")
-            if(arguments?.getBoolean("reauthenticate", false) != false) {
-                callback?.onSubmit(email_edit_text.editableText.toString(), password_edit_text.editableText.toString())
-            } else {
-                userViewModel.signInWithEmail(email_edit_text.editableText.toString(), password_edit_text.editableText.toString())
-            }
-        }
-
-        sign_up_button.setOnClickListener {
-            findNavController().navigate(SignInFragmentDirections.actionDestSignInToDestSignUp(email_edit_text.editableText.toString(), password_edit_text.editableText.toString()))
-        }
-
-        forgot_password_button.setOnClickListener {
-            findNavController().navigate(SignInFragmentDirections.actionDestSignInToDestForgotPassword(email_edit_text.editableText.toString()))
-        }
-
-        privacy_policy_button.setOnClickListener {
-            openPrivacyPolicy()
-        }
-        */
     }
 
     private fun submit() {

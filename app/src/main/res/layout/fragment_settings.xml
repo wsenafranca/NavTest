@@ -17,6 +17,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:theme="@style/AppTheme.AppBarOverlay"
+                android:background="?attr/colorSurface"
                 tools:context=".fragment.BaseFragment">
             <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"

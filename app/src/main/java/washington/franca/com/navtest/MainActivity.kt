@@ -15,11 +15,9 @@ import com.pd.chocobar.ChocoBar
 import kotlinx.android.synthetic.main.activity_main.*
 import washington.franca.com.navtest.databinding.ActivityMainBinding
 import washington.franca.com.navtest.fragment.login.SignInFragmentDirections
-import washington.franca.com.navtest.fragment.login.SignInPasswordFragmentDirections
 import washington.franca.com.navtest.util.EventObserver
 import washington.franca.com.navtest.util.RootNavigation
 import washington.franca.com.navtest.viewmodel.UserViewModel
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
@@ -38,18 +36,12 @@ class MainActivity : AppCompatActivity() {
                 UserViewModel.AuthState.AUTHENTICATED -> navController.navigate(MainNavGraphDirections.actionGlobalToDestHome())
                 UserViewModel.AuthState.SIGNING_IN_INPUT_EMAIL -> navController.navigate(LoginNavGraphDirections.actionGlobalToDestSignIn())
                 UserViewModel.AuthState.SIGNING_IN_INPUT_PASSWORD -> navController.navigate(SignInFragmentDirections.actionDestSignInToDestSignInPassword())
-                UserViewModel.AuthState.SIGNING_IN_FORGOT_PASSWORD -> navController.navigate(SignInPasswordFragmentDirections.actionDestSignInPasswordToDestForgotPassword())
+                UserViewModel.AuthState.SIGNING_IN_FORGOT_PASSWORD -> navController.navigate(LoginNavGraphDirections.actionGlobalToDestForgotPassword())
                 UserViewModel.AuthState.SIGNING_UP -> navController.navigate(SignInFragmentDirections.actionDestSignInToDestSignUp())
                 UserViewModel.AuthState.UNAUTHENTICATED -> navController.navigate(MainNavGraphDirections.actionGlobalToLoginNavGraph())
                 else -> {}
             }
         })
-        //userViewModel.error.observe(this, EventObserver {
-        //    showErrorMessage(it)
-        //})
-        //userViewModel.message.observe(this, EventObserver{
-       //    showMessage(it)
-        //})
 
         binding.userViewModel = userViewModel
         binding.lifecycleOwner = this

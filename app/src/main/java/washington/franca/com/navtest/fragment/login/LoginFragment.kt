@@ -1,10 +1,10 @@
 package washington.franca.com.navtest.fragment.login
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
+import kotlinx.android.synthetic.main.fragment_login.*
 import washington.franca.com.navtest.R
 import washington.franca.com.navtest.databinding.FragmentLoginBinding
 
@@ -23,30 +23,18 @@ class LoginFragment : BaseLoginFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.userViewModel = userViewModel
         binding.lifecycleOwner = viewLifecycleOwner
-        /*
-        sign_up_button.setOnClickListener {
-            findNavController().navigate(LoginFragmentDirections.actionDestLoginToDestSignUp(null, null))
+
+        sign_in_with_facebook_button.setOnClickListener {
+            userViewModel.signInWithFacebook(this@LoginFragment)
         }
 
         sign_in_with_google_button.setOnClickListener {
-            val signInIntent = userViewModel.googleSignInClient().signInIntent
-            startActivityForResult(signInIntent, RC_SIGN_IN)
+            userViewModel.signInWithGoogle(this@LoginFragment)
         }
-
-        sign_in_with_facebook_button.setOnClickListener {
-            facebookLoginManger.logIn(this, ArrayList<String>().apply{
-                add("email")
-                add("public_profile")
-            })
-        }
-
-        privacy_policy_button.setOnClickListener {
-            openPrivacyPolicy()
-        }
-        */
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        userViewModel.onActivityResult(requestCode, resultCode, data)
     }
 }

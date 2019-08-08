@@ -7,27 +7,31 @@
             tools:ignore="UnusedNavigation">
 
     <fragment android:id="@+id/dest_login" android:name="washington.franca.com.navtest.fragment.login.LoginFragment"
-              android:label=" " tools:layout="@layout/fragment_login">
-        <action android:id="@+id/action_dest_login_to_dest_sign_up" app:destination="@id/dest_sign_up"/>
-    </fragment>
+              android:label=" " tools:layout="@layout/fragment_login"/>
     <fragment android:id="@+id/dest_sign_up" android:name="washington.franca.com.navtest.fragment.login.SignUpFragment"
-              android:label="@string/login_sign_up_button" tools:layout="@layout/fragment_sign_up">
-        <action android:id="@+id/action_dest_sign_up_to_dest_sign_in" app:destination="@id/dest_sign_in"/>
-    </fragment>
+              android:label="@string/login_sign_up_button" tools:layout="@layout/fragment_sign_up"/>
     <fragment android:id="@+id/dest_sign_in" android:name="washington.franca.com.navtest.fragment.login.SignInFragment"
               android:label="@string/login_sign_in_button" tools:layout="@layout/fragment_sign_in">
-        <action android:id="@+id/action_dest_sign_in_to_dest_sign_up" app:destination="@id/dest_sign_up"/>
+        <action android:id="@+id/action_dest_sign_in_to_dest_sign_up" app:destination="@id/dest_sign_up"
+                app:enterAnim="@anim/slide_in_left" app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_right" app:popExitAnim="@anim/slide_out_right"/>
         <action android:id="@+id/action_dest_sign_in_to_dest_sign_in_password"
-                app:destination="@id/dest_sign_in_password"/>
+                app:destination="@id/dest_sign_in_password"
+                app:enterAnim="@anim/slide_in_left" app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_right" app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment android:id="@+id/dest_forgot_password"
               android:name="washington.franca.com.navtest.fragment.login.ForgotPasswordFragment"
-              android:label="@string/login_forgot_password_button" tools:layout="@layout/fragment_forgot_password">
+              android:label="@string/login_reset_password_title" tools:layout="@layout/fragment_forgot_password">
     </fragment>
-    <action android:id="@+id/action_global_to_dest_sign_in" app:destination="@id/dest_sign_in"/>
+    <action android:id="@+id/action_global_to_dest_sign_in" app:destination="@id/dest_sign_in"
+            app:enterAnim="@anim/slide_in_left" app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right" app:popExitAnim="@anim/slide_out_right"/>
+    <action android:id="@+id/action_global_to_dest_forgot_password" app:destination="@id/dest_forgot_password"
+            app:enterAnim="@anim/slide_in_left" app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right" app:popExitAnim="@anim/slide_out_right"/>
     <fragment android:id="@+id/dest_sign_in_password"
               android:name="washington.franca.com.navtest.fragment.login.SignInPasswordFragment"
               android:label="@string/login_sign_in_button" tools:layout="@layout/fragment_sign_in_password">
-        <action android:id="@+id/action_dest_sign_in_password_to_dest_forgot_password" app:destination="@id/dest_forgot_password"/>
     </fragment>
 </navigation>

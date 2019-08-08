@@ -67,6 +67,10 @@ class SignInPasswordFragment : BaseLoginFragment() {
         sign_in_button.setOnClickListener {
             submit()
         }
+
+        forgot_password_button.setOnClickListener {
+            userViewModel.recoverPassword()
+        }
     }
 
     private fun submit() {
