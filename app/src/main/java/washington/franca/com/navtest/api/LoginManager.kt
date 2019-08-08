@@ -3,6 +3,7 @@ package washington.franca.com.navtest.api
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.fragment.findNavController
@@ -29,14 +30,15 @@ class LoginManager {
     private var facebookCallback: CallbackManager? = null
     private var googleSignInClient: GoogleSignInClient? = null
     private var googleCallback:GoogleCallback? = null
-    private var emailCallback: SignInFragment.Callback? = null
+    private var emailCallback:EmailCallback? = null
     private val auth = FirebaseAuth.getInstance()
 
     private fun setupEmailCallback(callback: Callback, action:(AuthCredential)-> Task<AuthResult>) {
-        emailCallback = object: SignInFragment.Callback {
-            override fun onSubmit(email: String?, password: String?) {
+        emailCallback = object: EmailCallback() {
+            override fun onSuccess(user: User) {
                 try {
-                    action(EmailAuthProvider.getCredential(email!!, password!!)).addOnCompleteListener {
+                    action(EmailAuthProvider.getCredential(user.email!!, user.password!!)).addOnCompleteListener {
+                        emailCallback = null
                         try {
                             if(it.isSuccessful) {
                                 callback.onSuccess(auth.currentUser!!)
@@ -50,6 +52,55 @@ class LoginManager {
                 }catch (e:Exception) {
                     callback.onError(e)
                 }
+            }
+
+            override fun onCancel() {
+
+            }
+
+            override fun onError(error: Throwable?) {
+                callback.onError(error)
+            }
+        }
+    }
+
+    private fun setupCreateUser(callback:Callback) {
+        emailCallback = object: EmailCallback() {
+            override fun onSuccess(user: User) {
+                try {
+                    auth.createUserWithEmailAndPassword(user.email!!, user.password!!).addOnCompleteListener {
+                        emailCallback = null
+                        try {
+                            if(it.isSuccessful) {
+                                val profile = UserProfileChangeRequest.Builder()
+                                    .setDisplayName(user.name)
+                                    .setPhotoUri(Uri.parse("https://www.chaarat.com/wp-content/uploads/2017/08/placeholder-user.png"))
+                                    .build()
+                                auth.currentUser!!.updateProfile(profile).addOnCompleteListener { task->
+                                    if(task.isSuccessful) {
+                                        callback.onSuccess(auth.currentUser!!)
+                                    } else {
+                                        callback.onError(task.exception)
+                                    }
+                                }
+                            } else {
+                                callback.onError(it.exception)
+                            }
+                        }catch (e:Exception) {
+                            callback.onError(e)
+                        }
+                    }
+                }catch (e:Exception) {
+                    callback.onError(e)
+                }
+            }
+
+            override fun onCancel() {
+
+            }
+
+            override fun onError(error: Throwable?) {
+                callback.onError(error)
             }
         }
     }
@@ -67,6 +118,7 @@ class LoginManager {
         googleCallback = object :GoogleCallback() {
             override fun onSuccess(account: GoogleSignInAccount) {
                 action(GoogleAuthProvider.getCredential(account.idToken, null)).addOnCompleteListener {
+                    googleCallback = null
                     try {
                         if(it.isSuccessful) {
                             callback.onSuccess(auth.currentUser!!)
@@ -102,6 +154,7 @@ class LoginManager {
                     val token = result!!.accessToken.token
                     val credential = FacebookAuthProvider.getCredential(token)
                     action(credential).addOnCompleteListener {
+                        facebookCallback = null
                         try {
                             if(it.isSuccessful) {
                                 callback.onSuccess(auth.currentUser!!)
@@ -146,11 +199,16 @@ class LoginManager {
         }
     }
 
-    fun signInWithEmail(fragment: Fragment, callback: Callback) {
+    fun signInWithEmail(email:String?, password:String?, callback: Callback) {
         setupEmailCallback(callback) {
             return@setupEmailCallback auth.signInWithCredential(it)
         }
-        fragment.findNavController().navigate(LoginNavGraphDirections.actionGlobalToDestSignIn(null, null, false))
+        emailCallback?.execute(email, password)
+    }
+
+    fun createUser(email: String?, password: String?, name:String?, callback: Callback) {
+        setupCreateUser(callback)
+        emailCallback?.execute(email, password, name)
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -160,6 +218,28 @@ class LoginManager {
         } else if(googleCallback?.onActivityResult(requestCode, resultCode, data) != false) {
             googleCallback = null
         }
+    }
+
+    abstract class EmailCallback {
+        fun execute(email: String?, password: String?) {
+            try {
+                onSuccess(User(email, password, null))
+            }catch (e:Exception) {
+                onError(e)
+            }
+        }
+        fun execute(email: String?, password: String?, name: String?) {
+            try {
+                onSuccess(User(email, password, name))
+            }catch (e:Exception) {
+                onError(e)
+            }
+        }
+        abstract fun onSuccess(user:User)
+        abstract fun onCancel()
+        abstract fun onError(error:Throwable?)
+
+        data class User(var email:String?, var password: String?, var name:String?)
     }
 
     abstract class GoogleCallback {

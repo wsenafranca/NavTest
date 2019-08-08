@@ -2,15 +2,17 @@ package washington.franca.com.navtest.viewmodel
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
+import androidx.databinding.ObservableField
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.*
+import washington.franca.com.navtest.api.LoginManager
 import washington.franca.com.navtest.repository.UserRepository
 import washington.franca.com.navtest.util.Event
-import java.security.AuthProvider
 
 class UserViewModel(application: Application) : BaseViewModel(application) {
     companion object {
@@ -21,14 +23,18 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
 
     enum class AuthState {
         UNKNOWN,
-        AUTHENTICATED,
-        UNAUTHENTICATED
+        UNAUTHENTICATED,
+        SIGNING_IN_INPUT_EMAIL,
+        SIGNING_IN_INPUT_PASSWORD,
+        SIGNING_IN_FORGOT_PASSWORD,
+        SIGNING_UP,
+        AUTHENTICATED
     }
 
     private val repository = UserRepository(application)
+    private val manager:LoginManager = LoginManager()
 
-    private val _authState = MutableLiveData<Event<AuthState>>()
-    val authState:LiveData<Event<AuthState>> = _authState
+    val authState = MutableLiveData<Event<AuthState>>()
 
     private val _user = MutableLiveData<FirebaseUser>()
     val user:LiveData<FirebaseUser> = _user
@@ -36,20 +42,86 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
     private val _profilePhoto = MutableLiveData<Bitmap?>()
     val profilePhoto:LiveData<Bitmap?> = _profilePhoto
 
-    fun googleSignInClient():GoogleSignInClient = repository.googleSignInClient
+    var email:String? = null
+    var isNewUser = false
 
     init {
-        _authState.value = Event(AuthState.UNKNOWN)
+        authState.value = Event(AuthState.UNKNOWN)
         _profilePhoto.value = null
+    }
+
+    fun googleSignInClient():GoogleSignInClient = repository.googleSignInClient
+
+    fun signInWithEmail() {
+        email = null
+        isNewUser = false
+        authState.postValue(Event(AuthState.SIGNING_IN_INPUT_EMAIL))
+    }
+
+    fun verifyEmail(email:String?) {
+        repository.verifyEmail(email, {
+            this.email = email
+            when {
+                it.contains(EmailAuthProvider.PROVIDER_ID) -> {
+                    isNewUser = false
+                    authState.postValue(Event(AuthState.SIGNING_IN_INPUT_PASSWORD))
+                }
+                it.isNotEmpty() -> {
+                    isNewUser = true
+                    authState.postValue(Event(AuthState.SIGNING_IN_INPUT_PASSWORD))
+                }
+                else -> {
+                    authState.postValue(Event(AuthState.SIGNING_UP))
+                }
+            }
+        }, {
+            showErrorMessage(it)
+        })
+    }
+
+    fun signInWithEmail(email:String?, password: String?) {
+        manager.signInWithEmail(email, password, object:LoginManager.Callback{
+            override fun onSuccess(user: FirebaseUser) {
+                postCurrentUser()
+            }
+
+            override fun onCancel() {
+            }
+
+            override fun onError(e: Throwable?) {
+                showErrorMessage(e)
+            }
+
+            override fun onNeedReauthenticate() {
+            }
+        })
+    }
+
+    fun createUser(email: String?, password: String?, name:String?) {
+        manager.createUser(email, password, name, object :LoginManager.Callback {
+            override fun onSuccess(user: FirebaseUser) {
+                postCurrentUser()
+            }
+
+            override fun onCancel() {
+            }
+
+            override fun onError(e: Throwable?) {
+                showErrorMessage(e)
+            }
+
+            override fun onNeedReauthenticate() {
+            }
+        })
     }
 
     private fun postCurrentUser() {
         repository.currentUser({
-            _authState.postValue(Event(AuthState.AUTHENTICATED))
+            authState.postValue(Event(AuthState.AUTHENTICATED))
             showMessage("Logged in")
             updateUser()
         }, {
-            _authState.postValue(Event(AuthState.UNAUTHENTICATED))
+            authState.postValue(Event(AuthState.UNAUTHENTICATED))
             showErrorMessage(it)
         })
     }
@@ -59,20 +131,12 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
             _user.postValue(it)
             loadProfilePhoto()
         }, {
-            _authState.postValue(Event(AuthState.UNAUTHENTICATED))
+            authState.postValue(Event(AuthState.UNAUTHENTICATED))
             showErrorMessage(it)
         })
     }
 
     fun verifyCurrentAccount() = postCurrentUser()
-
-    fun signInWithEmail(email:String?, password:String?) {
-        repository.signInWithEmail(email, password, {
-            postCurrentUser()
-        }, {
-            showErrorMessage(it)
-        })
-    }
 
     fun signInWithGoogle(account: GoogleSignInAccount?) {
         repository.signInWithGoogle(account, {
@@ -84,14 +148,6 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
 
     fun signInWithFacebook(loginResult: LoginResult?) {
         repository.signInWithFacebook(loginResult, {
-            postCurrentUser()
-        }, {
-            showErrorMessage(it)
-        })
-    }
-
-    fun signUp(email: String?, password: String?, name:String?) {
-        repository.signUp(email, password, name, {
             postCurrentUser()
         }, {
             showErrorMessage(it)
@@ -156,7 +212,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
 
     fun signOut() {
         repository.signOut( {
-            _authState.postValue(Event(AuthState.UNAUTHENTICATED))
+            authState.postValue(Event(AuthState.UNAUTHENTICATED))
             _profilePhoto.postValue(null)
         }, {
             showErrorMessage(it)
@@ -165,7 +221,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
 
     fun delete(callback: (() -> Unit)?) {
         repository.delete({
-            _authState.postValue(Event(AuthState.UNAUTHENTICATED))
+            authState.postValue(Event(AuthState.UNAUTHENTICATED))
             _profilePhoto.postValue(null)
         }, {
             if(it is FirebaseAuthRecentLoginRequiredException) {

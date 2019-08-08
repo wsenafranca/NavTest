@@ -13,14 +13,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import washington.franca.com.navtest.R
+import washington.franca.com.navtest.util.RootNavigation
 
 open class BaseFragment : Fragment() {
-    private val rootNavigation = setOf(
-        R.id.dest_login,
-        R.id.dest_home,
-        R.id.dest_favorites,
-        R.id.dest_notifications,
-        R.id.dest_settings)
     private lateinit var progressView:View
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,7 +40,7 @@ open class BaseFragment : Fragment() {
         (activity as? AppCompatActivity)?.apply {
             setSupportActionBar(toolbar)
             toolbar?.let {
-                setupWithNavController(it, findNavController(), AppBarConfiguration.Builder(rootNavigation).build())
+                setupWithNavController(it, findNavController(), RootNavigation.appBarConfiguration())
             }
         }
 

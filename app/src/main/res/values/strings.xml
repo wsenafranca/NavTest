@@ -14,10 +14,15 @@
     <string name="login_email_hint">Email</string>
     <string name="login_password_hint">Password</string>
     <string name="login_name_hint">Name</string>
-    <string name="login_login_button">Login</string>
+    <string name="login_login_with_email_button">Login with email</string>
+    <string name="login_login_with_google_button">Login with Google</string>
+    <string name="login_login_with_facebook_button">Login with Facebook</string>
     <string name="login_sign_in_button">Sign in</string>
+    <string name="login_next_button">Next</string>
     <string name="login_do_not_have_account_button">Don\'t have account? Sign up</string>
     <string name="login_already_have_account_button">Already have account? Sign in</string>
+    <string name="login_sign_in_password_welcome_back_title">Welcome back!</string>
+    <string name="login_sign_in_password_welcome_back_message">You\'ve already used &lt;b&gt;%1$s&lt;/b&gt; to sign in. Enter your password for that account.</string>
     <string name="login_forgot_password_details_text">To reset password, enter your email and check mail to follow
         instruction.
     </string>
@@ -25,7 +30,7 @@
     <string name="login_forgot_password_button">Forgot password?</string>
     <string name="login_reset_password_button">Reset password</string>
     <string name="login_policy_privacy_button">Policy Privacy</string>
-    <string name="login_policy_privacy_link">"https://wsenafranca.github.io/NavTest/docs/index.html"</string>
+    <string name="login_policy_privacy_link">"https://wsenafranca.github.io/NavTest/docs/"</string>
     <string name="login_sign_up_button">Sign up</string>
     <string name="login_loading_indicator">Connecting…</string>
 

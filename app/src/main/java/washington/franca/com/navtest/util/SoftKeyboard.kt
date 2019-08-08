@@ -8,9 +8,7 @@ import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
 
 object SoftKeyboard {
     fun show(view: View?) {
-        (view?.context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.let { inputMethodManager->
-            inputMethodManager.showSoftInput(view, SHOW_IMPLICIT)
-        }
+        (view?.context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.showSoftInput(view, SHOW_IMPLICIT)
     }
     fun hide(activity: Activity?) {
         (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.let { inputMethodManager->

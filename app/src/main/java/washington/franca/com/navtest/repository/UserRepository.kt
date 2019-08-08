@@ -351,4 +351,18 @@ class UserRepository(private val context: Context) {
             errorCallback?.invoke(e)
         }
     }
+
+    fun verifyEmail(email:String?, callback: ((List<String>) -> Unit)?, errorCallback: ((Throwable?) -> Unit)?) {
+        try {
+            auth.fetchSignInMethodsForEmail(email!!).addOnCompleteListener {
+                if(it.isSuccessful) {
+                    callback?.invoke(it.result?.signInMethods?.toList() ?: emptyList<String>())
+                }else {
+                    errorCallback?.invoke(it.exception)
+                }
+            }
+        }catch (e:Exception) {
+            errorCallback?.invoke(e)
+        }
+    }
 }

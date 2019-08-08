@@ -2,25 +2,63 @@ package washington.franca.com.navtest.fragment.login
 
 import android.os.Bundle
 import android.view.*
-import androidx.navigation.fragment.findNavController
+import android.view.inputmethod.EditorInfo
+import androidx.databinding.DataBindingUtil
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 
 import washington.franca.com.navtest.R
+import washington.franca.com.navtest.databinding.FragmentSignInBinding
+import washington.franca.com.navtest.util.EventObserver
 import washington.franca.com.navtest.util.SoftKeyboard
+import java.lang.Exception
 
 class SignInFragment : BaseLoginFragment() {
-    var callback:Callback? = null
+    lateinit var binding:FragmentSignInBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sign_in, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_sign_in, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.userViewModel = userViewModel
+        binding.lifecycleOwner = viewLifecycleOwner
+
+        userViewModel.error.observe(viewLifecycleOwner, EventObserver{
+            progress_bar.isIndeterminate = false
+            sign_in_button.isEnabled = true
+            email_input_layout.error = it?.localizedMessage
+            email_edit_text.requestFocus()
+            SoftKeyboard.show(email_edit_text)
+        })
+
+        email_edit_text.setOnEditorActionListener { _, actionId, event ->
+            try {
+                if(actionId == EditorInfo.IME_ACTION_NEXT ||
+                    event.action == KeyEvent.ACTION_DOWN &&
+                    event.keyCode == KeyEvent.KEYCODE_ENTER) {
+                    submit()
+                    return@setOnEditorActionListener true
+                }
+            }catch (e:Exception) {
+                e.printStackTrace()
+            }
+            return@setOnEditorActionListener false
+        }
+        email_edit_text.requestFocus()
+        SoftKeyboard.show(email_edit_text)
+
+        sign_in_button.setOnClickListener {
+            submit()
+        }
+
+        /*
         arguments?.let {
             email_edit_text.setText(it.getString("email"))
             password_edit_text.setText(it.getString("password"))
@@ -47,14 +85,14 @@ class SignInFragment : BaseLoginFragment() {
         privacy_policy_button.setOnClickListener {
             openPrivacyPolicy()
         }
+        */
     }
 
-    override fun onDestroyView() {
-        callback = null
-        super.onDestroyView()
-    }
-
-    interface Callback {
-        fun onSubmit(email:String?, password: String?)
+    private fun submit() {
+        sign_in_button.isEnabled = false
+        SoftKeyboard.hide(activity)
+        progress_bar.isIndeterminate = true
+        email_input_layout.error = null
+        userViewModel.verifyEmail(email_edit_text.editableText.toString())
     }
 }

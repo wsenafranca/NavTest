@@ -1,64 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<layout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:context=".fragment.login.SignUpFragment"
-        android:background="@color/colorPrimaryDark"
-        android:theme="@style/AppTheme.Login"
-        android:paddingTop="20dp">
-    <ScrollView
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable name="userViewModel" type="washington.franca.com.navtest.viewmodel.UserViewModel"/>
+    </data>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true">
+            tools:context=".fragment.login.SignUpFragment">
         <LinearLayout
                 android:id="@+id/container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="48dp"
-                android:layout_marginEnd="48dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
-                android:gravity="center"
-                android:orientation="vertical">
-            <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/ic_sign_up"
-                    app:tint="#fff"
-                    tools:ignore="ContentDescription"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:text="@string/login_sign_up_button"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textStyle="bold"/>
+                android:orientation="vertical"
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
             <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.Design.TextInputLayout"
+                    android:id="@+id/email_input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
                     android:layout_marginTop="8dp"
-                    android:hint="@string/login_name_hint"
-                    app:startIconDrawable="@drawable/ic_account">
-                <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/name_edit_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:inputType="textPersonName"
-                        android:imeOptions="actionNext"/>
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:layout_marginTop="8dp"
-                    android:hint="@string/login_email_hint"
-                    app:startIconDrawable="@drawable/ic_email">
+                    android:hint="@string/login_email_hint">
                 <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/email_edit_text"
                         android:layout_width="match_parent"
@@ -68,14 +37,30 @@
                         android:imeOptions="actionNext"/>
             </com.google.android.material.textfield.TextInputLayout>
             <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.Design.TextInputLayout"
+                    android:id="@+id/name_input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
                     android:layout_marginTop="8dp"
-                    android:hint="@string/login_password_hint"
-                    app:startIconDrawable="@drawable/ic_password"
-                    app:passwordToggleEnabled="true">
+                    android:layout_marginBottom="8dp"
+                    android:hint="@string/login_name_hint">
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/name_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:inputType="textPersonName"
+                        android:imeOptions="actionNext"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Design.TextInputLayout"
+                    android:id="@+id/password_input_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:passwordToggleEnabled="true"
+                    android:hint="@string/login_password_hint">
                 <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/password_edit_text"
                         android:layout_width="match_parent"
@@ -83,36 +68,46 @@
                         android:inputType="textPassword"
                         android:imeOptions="actionDone"/>
             </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:id="@+id/sign_in_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end|center_vertical"
-                    android:textAllCaps="false"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                    android:text="@string/login_already_have_account_button"/>
-            <com.google.android.material.button.MaterialButton
-                    android:id="@+id/sign_up_button"
+            <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/login_sign_up_button"
-                    android:textColor="@color/colorPrimaryDark"
-                    app:cornerRadius="16dp"/>
-            <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:id="@+id/privacy_policy_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:textColor="#fff"
-                    android:textAllCaps="false"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                    android:text="@string/login_policy_privacy_button"/>
+                    android:layout_height="wrap_content">
+                <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:id="@+id/privacy_policy_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start|center_vertical"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:text="@string/login_policy_privacy_button"
+                        android:textAllCaps="false"/>
+                <com.google.android.material.button.MaterialButton
+                        android:id="@+id/sign_up_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|center_vertical"
+                        android:text="@string/login_sign_up_button"
+                        android:textColor="#fff"/>
+            </FrameLayout>
         </LinearLayout>
-    </ScrollView>
-    <include layout="@layout/appbar_transparent" android:id="@+id/appbar"/>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/appbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.AppBarOverlay"
+                tools:context=".fragment.BaseFragment">
+            <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_marginTop="20dp"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"/>
+            <ProgressBar
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:id="@+id/progress_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-7dp"
+                    android:layout_marginBottom="-7dp"/>
+        </com.google.android.material.appbar.AppBarLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>
