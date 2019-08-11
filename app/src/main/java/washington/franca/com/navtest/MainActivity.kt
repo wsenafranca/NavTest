@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -17,11 +18,13 @@ import washington.franca.com.navtest.databinding.ActivityMainBinding
 import washington.franca.com.navtest.fragment.login.SignInFragmentDirections
 import washington.franca.com.navtest.util.EventObserver
 import washington.franca.com.navtest.util.RootNavigation
+import washington.franca.com.navtest.viewmodel.NotificationViewModel
 import washington.franca.com.navtest.viewmodel.UserViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var userViewModel: UserViewModel
+    private lateinit var notificationViewModel: NotificationViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +46,16 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        notificationViewModel = NotificationViewModel.create(this)
+        notificationViewModel.countUnread.observe(this, Observer {
+            if(it > 0) {
+                bottom_nav.getOrCreateBadge(R.id.dest_notifications).number = it
+            } else {
+                bottom_nav.removeBadge(R.id.dest_notifications)
+            }
+        })
+
+        binding.notificationViewModel = notificationViewModel
         binding.userViewModel = userViewModel
         binding.lifecycleOwner = this
     }

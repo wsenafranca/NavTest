@@ -7,8 +7,11 @@
         <variable
                 name="userViewModel"
                 type="washington.franca.com.navtest.viewmodel.UserViewModel"/>
+        <variable
+                name="notificationViewModel"
+                type="washington.franca.com.navtest.viewmodel.NotificationViewModel"/>
     </data>
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".MainActivity"
@@ -17,16 +20,20 @@
                 android:id="@+id/nav_host_fragment"
                 android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 app:defaultNavHost="true"
-                app:navGraph="@navigation/main_nav_graph"/>
+                app:navGraph="@navigation/main_nav_graph"
+                app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/bottom_nav"/>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bottom_nav"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:menu="@menu/navigation_main"
-                android:layout_gravity="bottom"/>
-    </FrameLayout>
+                android:layout_gravity="bottom" app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

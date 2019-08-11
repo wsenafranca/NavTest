@@ -4,13 +4,13 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
     </style>
     <style name="AppTheme.Login" parent="ThemeOverlay.MaterialComponents.Dark">
         <item name="colorPrimary">#fff</item>
         <item name="colorPrimaryDark">@android:color/secondary_text_dark</item>
-        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowBackground">@color/colorPrimaryDark</item>
@@ -19,7 +19,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
     </style>

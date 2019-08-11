@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupWithNavController
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import washington.franca.com.navtest.R
 import washington.franca.com.navtest.util.RootNavigation
@@ -36,11 +37,15 @@ open class BaseFragment : Fragment() {
             View.GONE
         }
         val toolbar = getToolBar()
+        val collapsingToolbar = getCollapsingToolBar()
         @Suppress("CAST_NEVER_SUCCEEDS")
         (activity as? AppCompatActivity)?.apply {
             setSupportActionBar(toolbar)
-            toolbar?.let {
-                setupWithNavController(it, findNavController(), RootNavigation.appBarConfiguration())
+            if(toolbar != null && collapsingToolbar != null) {
+                setupWithNavController(collapsingToolbar, toolbar, findNavController(), RootNavigation.appBarConfiguration())
+            }
+            else if(toolbar != null) {
+                setupWithNavController(toolbar, findNavController(), RootNavigation.appBarConfiguration())
             }
         }
 
@@ -51,6 +56,10 @@ open class BaseFragment : Fragment() {
         }
 
     open fun getToolBar():Toolbar? {
+        return null
+    }
+
+    open fun getCollapsingToolBar():CollapsingToolbarLayout? {
         return null
     }
 

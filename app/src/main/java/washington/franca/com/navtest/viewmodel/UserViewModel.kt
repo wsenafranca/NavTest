@@ -31,8 +31,8 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
 
     val authState = MutableLiveData<Event<AuthState>>()
 
-    private val _user = MutableLiveData<FirebaseUser>()
-    val user:LiveData<FirebaseUser> = _user
+    private val _user = MutableLiveData<FirebaseUser?>()
+    val user:LiveData<FirebaseUser?> = _user
 
     private val _profilePhoto = MutableLiveData<Bitmap?>()
     val profilePhoto:LiveData<Bitmap?> = _profilePhoto
@@ -303,6 +303,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         repository.signOut(object: UserRepository.Callback<Void?>(){
             override fun onSuccess(result: Void?) {
                 authState.postValue(Event(AuthState.UNAUTHENTICATED))
+                _user.postValue(null)
                 _profilePhoto.postValue(null)
             }
 
@@ -316,6 +317,7 @@ class UserViewModel(application: Application) : BaseViewModel(application) {
         repository.deleteUser(object: UserRepository.Callback<Void?>(){
             override fun onSuccess(result: Void?) {
                 authState.postValue(Event(AuthState.UNAUTHENTICATED))
+                _user.postValue(null)
                 _profilePhoto.postValue(null)
             }
 

@@ -6,9 +6,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
 import android.view.inputmethod.EditorInfo
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.auth.FirebaseAuthEmailException
@@ -18,7 +16,6 @@ import com.pd.chocobar.ChocoBar
 import kotlinx.android.synthetic.main.fragment_authenticate_dialog.*
 
 import washington.franca.com.navtest.R
-import washington.franca.com.navtest.fragment.tintIcons
 import washington.franca.com.navtest.util.SoftKeyboard
 
 class AuthenticateDialogFragment : DialogFragment() {

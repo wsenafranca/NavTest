@@ -40,5 +40,7 @@
             app:destination="@id/dest_home" app:popUpTo="@+id/main_nav_graph" app:popUpToInclusive="true"/>
 
     <action android:id="@+id/action_global_to_dest_sub_settings"
-            app:destination="@id/dest_sub_settings"/>
+            app:destination="@id/dest_sub_settings"
+            app:enterAnim="@anim/slide_in_left" app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right" app:popExitAnim="@anim/slide_out_right"/>
 </navigation>
