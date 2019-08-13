@@ -89,7 +89,7 @@ class NotificationFragment : BaseFragment() {
                 notification: Notification
             ) {
                 Snackbar.make(view, R.string.notifications_undo_message, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.notifications_undo_message) {
+                    .setAction(R.string.notifications_undo_action) {
                         adapter.add(index, notification)
                         recycler_view.smoothScrollToPosition(index)
                     }.addCallback(object: Snackbar.Callback() {

@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">NavTest</string>
-    <string name="facebook_application_id">528820187855933</string>
-    <string name="facebook_login_protocol_scheme">fb528820187855933</string>
+    <string name="facebook_application_id" translatable="false">528820187855933</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb528820187855933</string>
+
+    <string name="google_news_api_key" translatable="false">354b31c8e11e42f18f435fe82c5faf9c</string>
+
 
     <!-- Bottom Navigation Menu -->
     <string name="menu_home">Home</string>
@@ -43,6 +46,21 @@
     <!-- Home -->
     <string name="home_welcome_message">Welcome, %1$s!</string>
     <string name="home_welcome_back_message">Welcome back, %1$s!</string>
+
+    <!-- News -->
+    <string-array name="news_category">
+        <item>News</item>
+        <item>Business</item>
+        <item>Entertainment</item>
+        <item>Health</item>
+        <item>Science</item>
+        <item>Sports</item>
+        <item>Technology</item>
+    </string-array>
+    <string name="news_menu_refresh">Refresh</string>
+    <string name="news_menu_search">Search</string>
+    <string name="news_results_title">Results</string>
+    <string name="news_results_empty_list">Results not found</string>
 
     <!-- Notifications -->
     <string-array name="notifications_type">

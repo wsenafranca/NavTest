@@ -11,8 +11,9 @@
               tools:layout="@layout/fragment_launch"/>
     <fragment android:id="@+id/dest_home"
               android:name="washington.franca.com.navtest.fragment.HomeFragment"
-              android:label="@string/menu_home"
-              tools:layout="@layout/fragment_home"/>
+              tools:layout="@layout/fragment_home">
+        <action android:id="@+id/action_dest_home_to_dest_news_search" app:destination="@id/dest_news_search"/>
+    </fragment>
     <fragment android:id="@+id/dest_favorites"
               android:name="washington.franca.com.navtest.fragment.FavoriteFragment"
               android:label="@string/menu_favorites"
@@ -43,4 +44,14 @@
             app:destination="@id/dest_sub_settings"
             app:enterAnim="@anim/slide_in_left" app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_right" app:popExitAnim="@anim/slide_out_right"/>
+    <fragment android:id="@+id/dest_news_result"
+              android:name="washington.franca.com.navtest.fragment.NewsResultFragment"
+              android:label="Results for: {query}" tools:layout="@layout/fragment_news_result">
+        <argument android:name="query" app:nullable="true" app:argType="string"/>
+    </fragment>
+    <fragment android:id="@+id/dest_news_search"
+              android:name="washington.franca.com.navtest.fragment.NewsSearchFragment"
+              android:label=" " tools:layout="@layout/fragment_news_search">
+        <action android:id="@+id/action_dest_news_search_to_dest_news_result" app:destination="@id/dest_news_result"/>
+    </fragment>
 </navigation>
